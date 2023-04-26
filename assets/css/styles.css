@@ -1,0 +1,93 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: white;
+}
+
+a {
+    cursor: pointer;
+}
+
+.title {
+    margin-top: 25px;
+}
+
+.title h1 {
+    color: rgb(0, 21, 209);
+    text-align: center;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: bold;
+}
+
+.title h2 {  
+    text-align: center;
+    font-size: 15px;
+    color: black;
+}
+
+.bar-search {
+    margin-top: 25px;
+    text-align: center;
+}
+
+#category {
+    border-radius: 7px;
+    padding: 3px 65px;
+    border: 1px solid rgba(176, 181, 233, 0.5);
+    text-align: center;
+}
+
+#category:focus {
+    border: 1px solid rgba(27, 30, 58, 0.5);
+}
+
+#search {
+    display: block;
+    padding: 8px;
+    border-radius: 16px;
+    margin: 15px auto;
+    border: none;
+}
+
+#results {
+    text-align: center;   
+}
+
+
+
+#books {
+    margin: 20px auto;
+    padding-bottom: 8px;
+    width: 50%;
+}
+
+.carta {
+    margin-bottom: 8px;
+    border: 1px solid grey;
+    display: flex;
+    padding: 10px 15px;
+    background-color:rgb(182, 220, 231);
+    border-radius: 8px;
+    width: 100%;
+}
+
+.carta-body {
+    font-weight: bold;
+    
+}
+
+.description-body {
+    margin-bottom: 8px;
+    border: 1px solid grey;
+    display: flex;
+    padding: 10px 15px;
+    background-color: rgb(33, 51, 66);
+    color: white;
+    border-radius: 8px;
+    overflow-wrap: break-word;
+    width: 100%;
+}
