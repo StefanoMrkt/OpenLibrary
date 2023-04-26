@@ -5,9 +5,9 @@ Cerca i tuoi libri per categoria all'interno della piattaforma OpenLibrary e sco
 
 Progetto realizzato con:
 
-**- HTML
-**- CSS
-**- Javascript
-**- Axios
+**- HTML**
+**- CSS**
+**- Javascript**
+**- Axios**
 
 
