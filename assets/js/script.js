@@ -2,12 +2,19 @@ const category = document.getElementById("category");
 const search = document.getElementById("search");
 const results = document.getElementById("results");
 const books = document.getElementById("books");
+const progressBar = document.getElementById("progress-bar");
+const mainProgress = document.getElementById("main-progress");
 
 let button;
+let Alldescription;
+let data;
+let cardBody;
+let xhr = new XMLHttpRequest();
+let url;
 
-search.addEventListener("click", function() {
 
 
+let deleteAllCards = function() {
     //Delete all the previous cards
     let cardsColl = document.querySelectorAll(".carta");
     if(cardsColl.length) {
@@ -31,94 +38,151 @@ search.addEventListener("click", function() {
             cl.remove();
         })
     }
+}
 
-    const value = category.value;
+let buttonClose = function() {    
+    button = document.createElement("button");
+    button.className = "btn-close";
+    button.setAttribute("aria-label", "Close");
+    Alldescription.appendChild(button);
+} 
 
-    if(value) {
-        const url = "https://openlibrary.org/subjects/" + value + ".json";
-        axios
-        .get(url)
-        .then(function(response) {
-            const data = response.data;
+let removePreviousDescription = function() {
+    button.addEventListener("click", function() {
+        let remove = document.querySelectorAll(".all-description");
+        if(remove.length) {
+            remove.forEach(function(rem) {
+            rem.remove();
+        })
+        }
+    });
+}
 
-            if (data.works && data.works.length > 0) {
+let removeDescriptionIfVisibile= function() {  
+    let remove = document.querySelectorAll(".all-description");
+    if(remove.length) {
+        remove.forEach(function(rem) {
+        rem.remove();
+    })
+    }
+}
 
-                results.innerHTML= "Risultati per: " + value;
-                category.value = "";
 
+mainProgress.style.display= 'none';
 
-                for (let book of data.works) {
+//View Loading Bar
+let loading = async function(event) {
 
-                    const divMain = document.createElement("div");
-                    divMain.className = "carta"
-                    books.appendChild(divMain);
+    mainProgress.style.display= 'block';
+    if(event.lenghtComputable) {
+        
+        let percentComplete = (event.loaded / event.total) * 100;
+        switch (percentComplete) {
+            case 25: progressBar.className="progress-bar w-"+25;
+            break;
+            case 50: progressBar.className="progress-bar w-"+50;
+            break;
+            case 75: progressBar.className="progress-bar w-"+75;
+            break;
+            case 100: progressBar.className="progress-bar w-"+100;
+            break;
+        }
+    }
+    else
+    {
+        let count = 0;
+        setInterval(() => {    
+            progressBar.className="progress-bar w-"+count;
+            count+= 25;
 
-                    const cardBody = document.createElement("a");
-                    cardBody.className = "carta-body"
-                    divMain.appendChild(cardBody);
-                    cardBody.innerHTML = book.title;
+            if(count > 100) {
+                count = 0
+            }
+        }, 300);
+    }
+}
 
-                    async function handleChange(event) {
+search.addEventListener("click", function() {
 
-                        const url2 = "https://openlibrary.org" + book.key + ".json";
-                        try {                          
-                            const response2 = await fetch(url2)
-                                if (response2.ok) {
+   deleteAllCards();
+   const value = category.value.toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
 
-                                    const data2= await response2.json();
+   if(value) {
     
-                                    const Alldescription = document.createElement("div");
-                                    Alldescription.className = "all-description"
+        url = "https://openlibrary.org/subjects/" + value + ".json";
+    
+        xhr.addEventListener('progress', loading);
+        xhr.open('GET', url);
+        xhr.send();
+        
+        axios.get(url)
+       .then(function(response) {
+       
+        data = response.data;
 
-                                    //Add 'X' button to close description
-                                    button = document.createElement("button");
-                                    button.className = "btn-close";
-                                    button.setAttribute("aria-label", "Close");
-                                    Alldescription.appendChild(button);
+        if (data.works && data.works.length > 0) {
 
-                                    button.addEventListener("click", function() {
-                                        let remove = document.querySelectorAll(".all-description");
-                                        if(remove.length) {
-                                            remove.forEach(function(rem) {
-                                            rem.remove();
-                                        })
-                                        }
-                                    });
+            results.innerHTML= "Risultati per: " +"\"" + value +"\"";
+            category.value = "";
+
+
+            for (let book of data.works) {
+
+            const divMain = document.createElement("div");
+            divMain.className = "carta"
+            books.appendChild(divMain);
+
+            const cardBody = document.createElement("a");
+            cardBody.className = "carta-body"
+            divMain.appendChild(cardBody);
+            cardBody.innerHTML = book.title; 
+            
+            
+
+            async function handleChange(event) {
+
+            const url2 = "https://openlibrary.org" + book.key + ".json";
+                try {                          
+                    const response2 = await fetch(url2)
+                    if (response2.ok) {
+                        const data2= await response2.json();
+                        Alldescription = document.createElement("div");
+                        Alldescription.className = "all-description"
+
+                        buttonClose();
+                        removePreviousDescription();
+                                                    
+                        const description = document.createElement("div");
+                        description.className = "description-body"
                                             
-                                    const description = document.createElement("div");
-                                    description.className = "description-body"
+                        if(data2.description && !data2.description.value)
+                            description.innerHTML = data2.description;
+                        else if(data2.description && data2.description.value)
+                                description.innerHTML = data2.description.value;
+                            else
+                                description.innerHTML = "Descrizione non disponibile";
 
-                                    if(data2.description)
-                                        description.innerHTML = data2.description;
-                                    else
-                                        description.innerHTML = "Descrizione non disponibile";
+                        removeDescriptionIfVisibile();
 
-                                    //Delete previous same description if visible
-                                    let remove = document.querySelectorAll(".all-description");
-                                    if(remove.length) {
-                                        remove.forEach(function(rem) {
-                                        rem.remove();
-                                    })
-                                    }
-
-                                    books.insertBefore (Alldescription, event.target.parentNode.nextSibling);
-                                    Alldescription.appendChild(description);              
-
-                                } else {
-                                    alert("Errore: " + response2.status);
-                                }            
-                        }
-                        catch(e) {
-                            alert(e);
-                        }         
+                        books.insertBefore (Alldescription, event.target.parentNode.nextSibling);
+                        Alldescription.appendChild(description);              
+                    } else {
+                        alert("Errore: " + response2.status);
+                    }            
                     }
+                catch(e) {
+                    alert(e);
+                }         
+            }
 
-                    cardBody.addEventListener('click', handleChange);
+            cardBody.addEventListener('click', handleChange);
                 } 
+
+            mainProgress.style.display= 'none';
             }
-            else {
-                results.innerHTML= "Nessun libro trovato per la categoria: " + value;
-            }
+        else {
+            results.innerHTML= "Nessun libro trovato per la categoria: " + value;
+        }
         })
         .catch (function(error) {
             alert("Impossibile recuperare i dati: " + error.message);
