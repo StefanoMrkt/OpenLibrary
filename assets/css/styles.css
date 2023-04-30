@@ -43,6 +43,12 @@ a {
 .bar-search {
     margin-top: 25px;
     text-align: center;
+    
+}
+
+#main-progress {
+    width: 50%;
+    margin: 80px auto;
 }
 
 #category {
