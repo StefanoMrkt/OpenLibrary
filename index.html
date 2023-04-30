@@ -29,6 +29,10 @@
         <button id="search">Cerca</button>
     </div>
 
+    <div class="progress" id="main-progress" role="progressbar" aria-label="Basic example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar w-25" id="progress-bar" ></div>
+    </div>
+
     <div id="results"></div>
 
     <div id="books"></div>
@@ -39,22 +43,22 @@
 
     <script type="module">
        // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+        import { initializeApp } from "firebase/app";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyB_IIJMgm5TUVF6L6rfC_c4Krqfc1llpsw",
-  authDomain: "openlibrary-5863b.firebaseapp.com",
-  projectId: "openlibrary-5863b",
-  storageBucket: "openlibrary-5863b.appspot.com",
-  messagingSenderId: "835581672029",
-  appId: "1:835581672029:web:48cd1e662e5104c232ebb4"
-};
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+        apiKey: "AIzaSyB_IIJMgm5TUVF6L6rfC_c4Krqfc1llpsw",
+        authDomain: "openlibrary-5863b.firebaseapp.com",
+        projectId: "openlibrary-5863b",
+        storageBucket: "openlibrary-5863b.appspot.com",
+        messagingSenderId: "835581672029",
+        appId: "1:835581672029:web:48cd1e662e5104c232ebb4"
+        };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
       </script>
 </body>
 </html>
