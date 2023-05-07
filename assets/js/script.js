@@ -7,12 +7,14 @@ const mainProgress = document.getElementById("main-progress");
 
 let button;
 let Alldescription;
+let description;
 let data;
 let cardBody;
 let xhr = new XMLHttpRequest();
 let url;
 
 
+mainProgress.style.display= 'none';
 
 let deleteAllCards = function() {
     //Delete all the previous cards
@@ -63,12 +65,65 @@ let removeDescriptionIfVisibile= function() {
     if(remove.length) {
         remove.forEach(function(rem) {
         rem.remove();
-    })
+        })
     }
 }
 
+let getProgress = function (url) {
+    xhr.addEventListener('progress', loading);
+    xhr.open('GET', url);
+    xhr.send();
+}
 
-mainProgress.style.display= 'none';
+let createCard = async function(book) {
+    const divMain = document.createElement("div");
+    divMain.className = "carta"
+    books.appendChild(divMain);
+
+    cardBody = document.createElement("a");
+    cardBody.className = "carta-body"
+    divMain.appendChild(cardBody);
+    cardBody.innerHTML = book.title; 
+}
+
+let createDescription = function(data2) {
+    description = document.createElement("div");
+    description.className = "description-body"
+                                            
+    if(data2.description && !data2.description.value)
+        description.innerHTML = data2.description;
+    else if(data2.description && data2.description.value)
+        description.innerHTML = data2.description.value;
+    else
+        description.innerHTML = "Descrizione non disponibile";
+}
+
+let onClear = function(){
+    buttonClose();
+    removePreviousDescription(); 
+}
+
+let handleChange = async function(event, book) {
+    const url2 = "https://openlibrary.org" + book.key + ".json";
+    try {                          
+        const response2 = await fetch(url2)
+        if (response2.ok) {
+            const data2 = await response2.json();
+            Alldescription = document.createElement("div");
+            Alldescription.className = "all-description"
+            onClear();               
+            createDescription(data2);
+            removeDescriptionIfVisibile();
+            books.insertBefore(Alldescription, event.target.parentNode.nextSibling);
+            Alldescription.appendChild(description);              
+        } else {
+            alert("Errore: " + response2.status);
+        }            
+    }
+    catch(e) {
+        alert(e);
+    }         
+}
 
 //View Loading Bar
 let loading = async function(event) {
@@ -106,80 +161,24 @@ search.addEventListener("click", function() {
 
    deleteAllCards();
    const value = category.value.toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
-
    if(value) {
     
         url = "https://openlibrary.org/subjects/" + value + ".json";
-    
-        xhr.addEventListener('progress', loading);
-        xhr.open('GET', url);
-        xhr.send();
-        
+        getProgress(url);
         axios.get(url)
-       .then(function(response) {
+       .then(async function(response) {
        
         data = response.data;
-
         if (data.works && data.works.length > 0) {
-
             results.innerHTML= "Risultati per: " +"\"" + value +"\"";
             category.value = "";
 
-
             for (let book of data.works) {
-
-            const divMain = document.createElement("div");
-            divMain.className = "carta"
-            books.appendChild(divMain);
-
-            const cardBody = document.createElement("a");
-            cardBody.className = "carta-body"
-            divMain.appendChild(cardBody);
-            cardBody.innerHTML = book.title; 
-            
-            
-
-            async function handleChange(event) {
-
-            const url2 = "https://openlibrary.org" + book.key + ".json";
-                try {                          
-                    const response2 = await fetch(url2)
-                    if (response2.ok) {
-                        const data2= await response2.json();
-                        Alldescription = document.createElement("div");
-                        Alldescription.className = "all-description"
-
-                        buttonClose();
-                        removePreviousDescription();
-                                                    
-                        const description = document.createElement("div");
-                        description.className = "description-body"
-                                            
-                        if(data2.description && !data2.description.value)
-                            description.innerHTML = data2.description;
-                        else if(data2.description && data2.description.value)
-                                description.innerHTML = data2.description.value;
-                            else
-                                description.innerHTML = "Descrizione non disponibile";
-
-                        removeDescriptionIfVisibile();
-
-                        books.insertBefore (Alldescription, event.target.parentNode.nextSibling);
-                        Alldescription.appendChild(description);              
-                    } else {
-                        alert("Errore: " + response2.status);
-                    }            
-                    }
-                catch(e) {
-                    alert(e);
-                }         
-            }
-
-            cardBody.addEventListener('click', handleChange);
-                } 
-
+                await createCard(book)
+                cardBody.addEventListener('click', (event) => handleChange(event,book));
+            } 
             mainProgress.style.display= 'none';
-            }
+        }
         else {
             results.innerHTML= "Nessun libro trovato per la categoria: " + value;
         }
